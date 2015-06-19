@@ -1,0 +1,36 @@
+#!perl
+
+# DATE
+# VERSION
+
+use 5.010001;
+use strict;
+use warnings;
+
+use Benchmark::Command;
+
+die "Usage: $0 <module> ...\n" unless @ARGV;
+my @mods;
+for (@ARGV) {
+    die "Invalid module name '$_'\n" unless /\A\w+(::\w+)*\z/;
+    push @mods, $_;
+}
+
+Benchmark::Command::run(
+    undef,
+    {
+        'none'       => [$^X, "-e1"],
+        map {($_ => [$^X, "-e", "use $_"])} @mods,
+    },
+);
+
+# ABSTRACT: Benchmark startup time of Perl modules
+# PODNAME:
+
+=head1 SYNOPSIS
+
+ % bench-startup-modules Getopt::Long Getopt::Long::Less Getopt::Long::EvenLess
+
+Sample output:
+
+# COMMAND: perl bin/bench-startup-modules Getopt::Long Getopt::Long::Less Getopt::Long::EvenLess
